@@ -1,0 +1,14 @@
+Number - Name - Age
+
+01 Andreas      31
+02 Jeppe        24
+03 Shih-Fu      24
+04 Rasmus       39
+05 Janus        25
+06 Karl         27
+07 Mikkel       30
+08 Jens         27
+09 David        28
+10 Bent         31
+11 Allan        52
+12 Jens Michael 41
