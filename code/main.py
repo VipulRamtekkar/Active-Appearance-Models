@@ -1,30 +1,28 @@
 from solver import solve
+from visualize_pointset import get_coordinates
 
+import os
 import h5py
 import numpy as np 
 
-# ------------------------- Ellipse dataset -------------------------
-data_path = '../data/ellipse/ellipse2.npy'
-data = np.load(data_path)
-solve(data, save_plot_dir = '../results/ellipse', data_dir= '../data/ellipse/data')
+# ------------------------- Face Dataset -------------------------
+data_path = '../imm3943/IMM-Frontal Face DB SMALL/'
+N = len(os.listdir(data_path))-3
 
-# ------------------------- Hand dataset -------------------------
-data_path = '../data/hand/data.mat'
-f = h5py.File(data_path)
-for k, v in f.items():
-	data = np.array(v)
+# pointset_data = np.zeros((N, 73, 2))
+pointset_data = []
+for i, img_path in enumerate(os.listdir(data_path)):
+	if not '.jpg' in img_path:
+		continue
+	complete_path = os.path.join(data_path, img_path)
+	x_coordinates, y_coordinates, connect_from, connect_to = get_coordinates(complete_path)
+	x_coordinates = 600*np.expand_dims(x_coordinates, 1); y_coordinates = 800*(1-np.expand_dims(y_coordinates, 1))
+	
+	coordinates = np.expand_dims(np.concatenate((x_coordinates, y_coordinates), axis=1), 0)
+	pointset_data.append(coordinates)
 
-solve(data, save_plot_dir = '../results/hand')
-
-# ------------------------- Leaf dataset -------------------------
-data_path = '../data/leaf/leaf.npy'
-data = np.load(data_path)
-solve(data, save_plot_dir = '../results/leaf', data_dir= '../data/leaf/data')
-
-# ------------------------- Brain MRI dataset -------------------------
-data_path = '../data/brain/brain.npy'
-data = np.load(data_path)
-solve(data, save_plot_dir = '../results/brain', data_dir= '../data/brain/data')
+pointset_data = np.concatenate(pointset_data, axis=0)
+solve(pointset_data, connect_from, connect_to, save_plot_dir = '../results/faces', data_dir= '../data/faces/data')
 
 
 
