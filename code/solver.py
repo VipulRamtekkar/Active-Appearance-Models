@@ -53,7 +53,6 @@ def solve(data, connect_from, connect_to, save_plot_dir = '../results/hand', dat
 
 	# -------------------------- Part D --------------------------- #
 
-	print(eig_values)
 
 	def get_modes_of_variation(i):
 
@@ -108,46 +107,24 @@ def solve(data, connect_from, connect_to, save_plot_dir = '../results/hand', dat
 	# -------------------------- Part E --------------------------- #
 	
 
-	# z_closest_mean, index_mean = get_closest_pointset(data, mean)
-	# z_closest_var_1_plus, index_mean_plus = get_closest_pointset(data, var_1_plus)
-	# z_closest_var_1_minus, index_mean_minus = get_closest_pointset(data, var_1_minus)
+	z_closest_mean, index_mean = get_closest_pointset(data, mean)
+	z_closest_var_1_plus, index_mean_plus = get_closest_pointset(data, var_1_plus)
+	z_closest_var_1_minus, index_mean_minus = get_closest_pointset(data, var_1_minus)
 
-	# if data_dir is not None:
+	visualize_checkpoints(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean] ), show=False)
+	plt.title('Image closest to the the mean shape')
+	plt.savefig(os.path.join(save_plot_dir, 'closest_mean.png'))
+	plt.clf()
 
-	# 	visualize_checkpoints(np.expand_dims(data[index_mean], 0), os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean]))
-	# 	plt.title('Image closest to the the mean shape')
-	# 	plt.savefig(os.path.join(save_plot_dir, 'closest_mean.png'))
-	# 	plt.clf()
+	visualize_checkpoints(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_plus] ), show=False)
+	plt.title('Image closest to Mean shape +3 S.D along the top mode of variation')
+	plt.savefig(os.path.join(save_plot_dir, 'closest_var_plus.png'))
+	plt.clf()
 
-	# 	visualize_checkpoints(np.expand_dims(data[index_mean_plus], 0), os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_plus]))
-	# 	plt.title('Image closest to Mean shape +3 S.D along the top mode of variation')
-	# 	plt.savefig(os.path.join(save_plot_dir, 'closest_var_plus.png'))
-	# 	plt.clf()
-
-	# 	visualize_checkpoints(np.expand_dims(data[index_mean_minus], 0), os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_minus]))
-	# 	plt.title('Image closest to Mean shape -3 S.D along the top mode of variation')
-	# 	plt.savefig(os.path.join(save_plot_dir, 'closest_var_minus.png'))
-	# 	plt.clf()
-
-	# else: # Hand Datset
-	# 	plt.plot(data[index_mean, :, 0],data[index_mean, :, 1], 'ro-' )
-	# 	plt.plot([data[index_mean, -1, 0], data[index_mean, 0, 0]],[data[index_mean, -1, 1], data[index_mean, 0, 1]], 'ro-' )
-	# 	plt.title('Image closest to the the mean shape')
-	# 	plt.savefig(os.path.join(save_plot_dir, 'closest_mean.png'))
-	# 	plt.clf()
-
-	# 	plt.plot(data[index_mean_plus, :, 0],data[index_mean_plus, :, 1], 'ro-' )
-	# 	plt.plot([data[index_mean_plus, -1, 0], data[index_mean_plus, 0, 0]],[data[index_mean_plus, -1, 1], data[index_mean_plus, 0, 1]], 'ro-' )
-	# 	plt.title('Image closest to Mean shape +3 S.D along the top mode of variation')
-	# 	plt.savefig(os.path.join(save_plot_dir, 'closest_var_plus.png'))
-	# 	plt.clf()
-
-	# 	plt.plot(data[index_mean_minus, :, 0],data[index_mean_minus, :, 1], 'ro-' )
-	# 	plt.plot([data[index_mean_minus, -1, 0], data[index_mean_minus, 0, 0]],[data[index_mean_minus, -1, 1], data[index_mean_minus, 0, 1]], 'ro-' )
-	# 	plt.title('Image closest to Mean shape -3 S.D along the top mode of variation')
-	# 	plt.savefig(os.path.join(save_plot_dir, 'closest_var_minus.png'))
-	# 	plt.clf()
-
+	visualize_checkpoints(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_minus] ), show=False)
+	plt.title('Image closest to Mean shape -3 S.D along the top mode of variation')
+	plt.savefig(os.path.join(save_plot_dir, 'closest_var_minus.png'))
+	plt.clf()
 
 
 

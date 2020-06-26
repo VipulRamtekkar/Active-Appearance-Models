@@ -30,14 +30,11 @@ def plot_pointset_with_connections(x_values, y_values, connect_from, connect_to,
 		plt.plot([x_values[i], x_values[c_t]], [y_values[i], y_values[c_t]], color=color)
 
 
-def visualize_checkpoints(img_path, pointset=None, show=True):
+def visualize_checkpoints(img_path, show=True):
 	img = plt.imread(img_path)
 	
-	if pointset == None:
-		x_values, y_values, connect_from, connect_to = get_coordinates(img_path)
-		x_values *= img.shape[1]; y_values *= img.shape[0]
-	else:
-		x_values = pointset[0,:,0]; y_values = pointset[0,:,1]
+	x_values, y_values, connect_from, connect_to = get_coordinates(img_path)
+	x_values *= img.shape[1]; y_values *= img.shape[0]
 
 	fig, ax = plt.subplots()
 	ax.imshow(img)
@@ -46,7 +43,8 @@ def visualize_checkpoints(img_path, pointset=None, show=True):
 	for i, (c_f, c_t) in enumerate(zip(connect_from, connect_to)):
 		ax.plot([x_values[c_f], x_values[i]], [y_values[c_f], y_values[i]], color='black')
 		ax.plot([x_values[i], x_values[c_t]], [y_values[i], y_values[c_t]], color='black')
-	plt.show()
+	if show:
+		plt.show()
 
 
 if __name__ == '__main__':
