@@ -54,10 +54,10 @@ def solve(data, connect_from, connect_to, save_plot_dir = '../results/hand', dat
 	# -------------------------- Part D --------------------------- #
 
 
-	def get_modes_of_variation(i):
+	def get_modes_of_variation(i, scale=3):
 
-		var_plus = mean + 3*np.sqrt(np.real(eig_values[i]))*np.real(eig_vecs[:,i]).reshape(mean.shape)
-		var_minus = mean - 3*np.sqrt(np.real(eig_values[i]))*np.real(eig_vecs[:,i]).reshape(mean.shape)
+		var_plus = mean + scale*np.sqrt(np.real(eig_values[i]))*np.real(eig_vecs[:,i]).reshape(mean.shape)
+		var_minus = mean - scale*np.sqrt(np.real(eig_values[i]))*np.real(eig_vecs[:,i]).reshape(mean.shape)
 		return var_plus, var_minus
 
 	for i in range(40):
@@ -74,28 +74,28 @@ def solve(data, connect_from, connect_to, save_plot_dir = '../results/hand', dat
 	plt.savefig(os.path.join(save_plot_dir, 'mean-and-first-mode.png'))
 	plt.clf()
 
-	var_2_plus, var_2_minus = get_modes_of_variation(1)
+	var_2_plus, var_2_minus = get_modes_of_variation(1, scale=5)
 
 	for i in range(40):
 		plt.plot(z_aligned[i,:,0], z_aligned[i,:,1], 'o', alpha=0.15)
 
 	plot_pointset_with_connections(mean[0,:,0], mean[0,:,1], connect_from, connect_to, label='Mean')
-	plot_pointset_with_connections(var_2_plus[0,:,0], var_2_plus[0,:,1], connect_from, connect_to, label= 'Mean + 3 S.D', color='red')
-	plot_pointset_with_connections(var_2_minus[0,:,0], var_2_minus[0,:,1], connect_from, connect_to, label='Mean - 3 S.D',color='blue')
+	plot_pointset_with_connections(var_2_plus[0,:,0], var_2_plus[0,:,1], connect_from, connect_to, label= 'Mean + 5 S.D', color='red')
+	plot_pointset_with_connections(var_2_minus[0,:,0], var_2_minus[0,:,1], connect_from, connect_to, label='Mean - 5 S.D',color='blue')
 
 	plt.title('2nd Mode of Variation with all the aligned pointsets')
 	plt.legend()
 	plt.savefig(os.path.join(save_plot_dir, 'mean-and-second-mode.png'))
 	plt.clf()
 
-	var_3_plus, var_3_minus = get_modes_of_variation(2)
+	var_3_plus, var_3_minus = get_modes_of_variation(2, scale=7)
 
 	for i in range(40):
 		plt.plot(z_aligned[i,:,0], z_aligned[i,:,1], 'o', alpha=0.15)
 	
 	plot_pointset_with_connections(mean[0,:,0], mean[0,:,1], connect_from, connect_to, label='Mean')
-	plot_pointset_with_connections(var_3_plus[0,:,0], var_3_plus[0,:,1], connect_from, connect_to, label= 'Mean + 3 S.D', color='red')
-	plot_pointset_with_connections(var_3_minus[0,:,0], var_3_minus[0,:,1], connect_from, connect_to, label='Mean - 3 S.D',color='blue')
+	plot_pointset_with_connections(var_3_plus[0,:,0], var_3_plus[0,:,1], connect_from, connect_to, label= 'Mean + 7 S.D', color='red')
+	plot_pointset_with_connections(var_3_minus[0,:,0], var_3_minus[0,:,1], connect_from, connect_to, label='Mean - 7 S.D',color='blue')
 
 	plt.title('3rd Mode of Variation with all the aligned pointsets')
 	plt.legend()
@@ -106,10 +106,26 @@ def solve(data, connect_from, connect_to, save_plot_dir = '../results/hand', dat
 
 	# -------------------------- Part E --------------------------- #
 	
-
 	z_closest_mean, index_mean = get_closest_pointset(data, mean)
 	z_closest_var_1_plus, index_mean_plus = get_closest_pointset(data, var_1_plus)
 	z_closest_var_1_minus, index_mean_minus = get_closest_pointset(data, var_1_minus)
+
+	# from image_piecewise_affine.warp import PiecewiseAffineTransform
+	# dst_point = get_coordinates(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean] ))
+	# dst_img = plt.imread(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean] ))
+
+	# src_point = get_coordinates(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_plus] ))
+	# src_img = plt.imread(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_plus] ))
+
+	# src_pts, dst_pts = [], []
+	# for x,y in zip(src_point[0]*600, src_point[1]*800):
+	# 	src_pts.append((x,y))
+	# for x,y in zip(dst_point[0]*600, dst_point[1]*800):
+	# 	dst_pts.append((x,y))
+
+	print(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean] ))
+	print(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_plus] ))
+	print(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean_minus] ))
 
 	visualize_checkpoints(os.path.join(data_dir, sorted(os.listdir(data_dir))[index_mean] ), show=False)
 	plt.title('Image closest to the the mean shape')
