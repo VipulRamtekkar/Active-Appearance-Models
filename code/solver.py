@@ -142,7 +142,7 @@ def solve(data, connect_from, connect_to, save_plot_dir = '../results/hand', dat
 	plt.savefig(os.path.join(save_plot_dir, 'closest_var_minus.png'))
 	plt.clf()
 
-
+	return eig_vecs, eig_values, mean
 
 
 
