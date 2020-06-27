@@ -40,7 +40,7 @@ def texture_model(full_res_data, data, connect_from=None, connect_to=None, save_
 		eig_values = np.load('../results/texture_eigvalues.npy')
 		eig_vecs = np.load('../results/texture_eigvecs.npy')
 	except:
-		cov_matrix = np.cov(g_normalized.T)
+		cov_matrix = np.cov(g_normalized.T - mean_texture.reshape(mean_texture.size, 1))
 		eig_values, eig_vecs = scipy.linalg.eig(cov_matrix)
 		np.save('../results/texture_cov.npy', cov_matrix)
 		np.save('../results/texture_eigvalues.npy', eig_values)

@@ -3,6 +3,7 @@ from texture_model import texture_model
 from visualize_pointset import get_coordinates
 from normalize_shape import normalize_shape
 from fit_test_sample import fit_shape, fit_texture
+from combine_variation_modes import get_combine_variation_modes
 
 import os
 import matplotlib.pyplot as plt
@@ -53,7 +54,7 @@ def prepare_data(data_dir, precomputed_shape_normalized_texture, save_texture_da
 	 connect_from, connect_to, np.array(data_list)
 
 
-def main(data_dir = '../data/imm3943/IMM-Frontal Face DB SMALL/', precomputed_shape_normalized_texture=False):
+def main(data_dir='../data/imm3943/IMM-Frontal Face DB SMALL/', precomputed_shape_normalized_texture=False):
 
 	# Prepare data
 	pointset_data, shape_normalized_texture_data, shape_normalized_texture_data_full_res, \
@@ -70,6 +71,7 @@ def main(data_dir = '../data/imm3943/IMM-Frontal Face DB SMALL/', precomputed_sh
 	print('----------------------------------Train Shape Model----------------------------------')
 	shape_model(pointset_data[train_indices], connect_from, connect_to, save_plot_dir='../results/faces/shapes', 
 		data_list=data_list[train_indices])
+	print('Shape Model trained! Results saved in ../results/faces/shapes')
 
 	# Test fitting ability of shape model
 	print('----------------------------------Test Shape Model Fits----------------------------------')
@@ -78,13 +80,15 @@ def main(data_dir = '../data/imm3943/IMM-Frontal Face DB SMALL/', precomputed_sh
 	shape_eig_values = np.load('../results/shape_eigvalues.npy')
 	shape_eig_vecs = np.load('../results/shape_eigvecs.npy')
 
+	print('Evaluating Shape Model fits on Test-Set...')
 	fit_shape(pointset_data[test_indices],shape_mean, shape_cov_matrix, shape_eig_values, shape_eig_vecs, 
-		connect_from, connect_to, save_plot_dir='../results/faces/shapes')
+		connect_from, connect_to, save_dir='../results/faces/shapes')
 
 	# Train Texture Model
 	print('----------------------------------Train Texture Model----------------------------------')
 	texture_model(shape_normalized_texture_data_full_res[train_indices], shape_normalized_texture_data[train_indices], connect_from, 
 		connect_to, save_plot_dir='../results/faces/texture')
+	print('Texture Model trained! Results saved in ../results/faces/texture')
 
 	shape_mean = np.load('../results/shape_mean.npy')
 	shape_cov_matrix = np.load('../results/shape_cov.npy')
@@ -98,14 +102,18 @@ def main(data_dir = '../data/imm3943/IMM-Frontal Face DB SMALL/', precomputed_sh
 	texture_eig_values = np.load('../results/texture_eigvalues.npy')
 	texture_eig_vecs = np.load('../results/texture_eigvecs.npy')
 
-	fit_shape(shape_normalized_texture_data_full_res[test_indices], mean, cov_matrix, eig_values, eig_vecs, connect_from, 
-		connect_to, save_plot_dir='../results/faces/texture')
+	print('Evaluating Texture Model fits on Test-Set...')
+	fit_texture(shape_normalized_texture_data[test_indices], texture_mean, texture_cov_matrix, texture_eig_values, texture_eig_vecs, 
+		connect_from, connect_to, save_dir='../results/faces/texture')
 
 	print('----------------------------------Obtain combined modes of variations----------------------------------')
+	get_combine_variation_modes(shape_mean, shape_eig_values, shape_eig_vecs, texture_mean, texture_eig_values, 
+		texture_eig_vecs, save_plot_dir='../results/faces/combine_modes')
+	print('Combine Modes of variations generated! Results saved in ../results/faces/combine_modes')
 
 
 if __name__ == '__main__':
-	np.random.seed(14)
+	np.random.seed(1243)
 	main(precomputed_shape_normalized_texture=True)
 
 
