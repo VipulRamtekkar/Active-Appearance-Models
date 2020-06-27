@@ -10,6 +10,8 @@ __pycache__/
 *._
 *__
 .DS_Store
+*.DS_Store
+.DS_Store*
 
 # Distribution / packaging
 .Python
