@@ -84,7 +84,7 @@ def main(data_dir = '../data/imm3943/IMM-Frontal Face DB SMALL/', precomputed_sh
 	# Train Texture Model
 	print('----------------------------------Train Texture Model----------------------------------')
 	texture_model(shape_normalized_texture_data_full_res[train_indices], shape_normalized_texture_data[train_indices], connect_from, 
-		connect_to, save_plot_dir = '../results/faces/texture')
+		connect_to, save_plot_dir='../results/faces/texture')
 
 	shape_mean = np.load('../results/shape_mean.npy')
 	shape_cov_matrix = np.load('../results/shape_cov.npy')
@@ -92,8 +92,14 @@ def main(data_dir = '../data/imm3943/IMM-Frontal Face DB SMALL/', precomputed_sh
 	shape_eig_vecs = np.load('../results/shape_eigvecs.npy')
 
 	print('----------------------------------Test Texture Model Fits----------------------------------')
-	fit_shape(pointset_data[test_indices],shape_mean, shape_cov_matrix, shape_eig_values, shape_eig_vecs, 
-		connect_from, connect_to, save_plot_dir='../results/faces/shapes')
+	
+	texture_mean = np.load('../results/texture_mean.npy')
+	texture_cov_matrix = np.load('../results/texture_cov.npy')
+	texture_eig_values = np.load('../results/texture_eigvalues.npy')
+	texture_eig_vecs = np.load('../results/texture_eigvecs.npy')
+
+	fit_shape(shape_normalized_texture_data_full_res[test_indices], mean, cov_matrix, eig_values, eig_vecs, connect_from, 
+		connect_to, save_plot_dir='../results/faces/texture')
 
 	print('----------------------------------Obtain combined modes of variations----------------------------------')
 

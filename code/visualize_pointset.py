@@ -66,29 +66,6 @@ def visualize_checkpoints(img_path, show=True):
 	if show:
 		plt.show()
 
-def plot(s1,s2,j):
-
-	x1 = []
-	y1 = []
-	x2 = []
-	y2 = []
-
-	for i in range(len(s1)):
-		x1.append(s1[i][0])
-		y1.append(s1[i][1])
-
-	for i in range(len(s2)):
-		x2.append(s2[i][0])
-		y2.append(s2[i][1])
-
-	plt.scatter(x1,y1)
-	plt.scatter(x2,y2)
-	plt.title("Comparing fit against annotation")
-	plt.savefig('../results/faces/comparison'+str(j)+'.png')
-	plt.clf()
-
-
-
 if __name__ == '__main__':
 	img_path = '../imm3943/IMM-Frontal Face DB SMALL/05_10.jpg'
 	visualize_checkpoints(img_path)

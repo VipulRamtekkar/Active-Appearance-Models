@@ -46,6 +46,6 @@ def fit_shape(test_pointset_data, mean, cov_matrix, eig_values, eig_vecs, connec
 		plt.clf()
 
 
-def fit_texture(test_texture_data, cov_matrix, eig_values, eig_vectors):
+def fit_texture(test_texture_data, mean, cov_matrix, eig_values, eig_vecs, connect_from, connect_to, save_plot_dir):
 	pass
 
