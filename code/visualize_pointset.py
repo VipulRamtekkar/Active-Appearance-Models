@@ -3,10 +3,28 @@ import os
 import cv2
 import matplotlib.pyplot as plt 
 
+def get_coordinates_lfpw(img_path):
+	img_name = img_path.split('/')[-1].split('.')[0]
+	coord_path = '../data/lfpw/trainset/{}.pts'.format(img_name)
+
+	with open(coord_path) as f:
+		content = f.readlines()
+	points = content[3:71]
+	x_values = np.array([float(point.split(' ')[0]) for point in points])
+	y_values = np.array([float(point.split(' ')[1]) for point in points])
+
+	base = np.arange(68)
+
+	connect_from = np.roll(base, -1, 0)
+	connect_to = np.roll(base, 1, 0)
+
+	return x_values, y_values, connect_from, connect_to
+
 def get_coordinates(img_path):
 	img_name = img_path.split('/')[-1].split('.')[0]
 
 	coord_path = '../imm3943/IMM-Frontal Face DB SMALL/asf/{}.asf'.format(img_name)
+	# coord_path = '../data/trainset/{}.png'.format(img_name)
 
 	with open(coord_path) as f:
 		content = f.readlines()
