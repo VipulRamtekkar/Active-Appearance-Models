@@ -45,7 +45,7 @@ def get_combine_variation_modes(shape_mean, shape_eig_values, shape_eig_vecs, te
 	texture_var_1_plus, texture_var_1_minus = get_individual_variation_mode(texture_eig_values, texture_eig_vecs, texture_mean, 0)
 
 	shape_var_2_plus, shape_var_2_minus = get_individual_variation_mode(shape_eig_values, shape_eig_vecs, shape_mean, 1, scale=10)
-	texture_var_2_plus, texture_var_2_minus = get_individual_variation_mode(texture_eig_values, texture_eig_vecs, texture_mean, 2)
+	texture_var_2_plus, texture_var_2_minus = get_individual_variation_mode(texture_eig_values, texture_eig_vecs, texture_mean, 1)
 
 	f, axarr = plt.subplots(4,4)
 	for s, shape_mode in enumerate([shape_var_1_minus, shape_var_1_plus, shape_var_2_minus, shape_var_2_plus]):		 
