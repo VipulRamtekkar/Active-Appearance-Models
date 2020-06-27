@@ -13,9 +13,9 @@ __pycache__/
 *.DS_Store
 */.DS_Store
 */*/.DS_Store
-../data/.DS_Store
-../results/.DS_Store
-../results/faces/.DS_Store
+data/.DS_Store
+results/.DS_Store
+results/faces/.DS_Store
 *.npy
 ../results/*.npy
 
