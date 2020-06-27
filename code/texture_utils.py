@@ -24,7 +24,6 @@ def compute_mean_texture(data):
 
 		normalized_data = (data-beta)/alpha
 
-		# import pdb; pdb.set_tr/ace()
 		mean_texture = np.mean(normalized_data, axis=0, keepdims=True)
 		# Standardize mean
 

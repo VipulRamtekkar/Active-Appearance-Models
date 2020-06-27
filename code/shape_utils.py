@@ -18,7 +18,6 @@ def compute_optimal_rotation(z1, z2):
 
 	X = z1 # (Nx2)
 	Y = z2 # (2xN)
-	# import pdb; pdb.set_trace()
 
 	U, S, Vt = np.linalg.svd(np.matmul(X, Y.T))
 
@@ -102,7 +101,28 @@ def get_closest_pointset(z, mean):
 
 	return z[min_dist_index], min_dist_index
 
+def preshape_to_image_space(z_preshape, shape_mean_x_coord, shape_mean_y_coord):
 
+	centroid_x = np.mean(shape_mean_x_coord)
+	centroid_y = np.mean(shape_mean_y_coord)
+
+	z_mean = np.concatenate((np.expand_dims(shape_mean_x_coord,1), np.expand_dims(shape_mean_y_coord,1)), axis=1)
+	z_mean = np.expand_dims(z_mean, 0)
+
+	z_mean_preshape = compute_preshape_space(z_mean)
+
+	R = compute_optimal_rotation(z_preshape[0], z_mean_preshape[0])
+	z_preshape = np.expand_dims(np.dot(R, z_preshape[0]), 0)
+
+
+	pointset_norm = np.linalg.norm(z_mean-np.mean(z_mean, axis=(0,1)), keepdims=True)
+
+	z_img = z_preshape*pointset_norm
+	z_img[0,:, 0] += centroid_x
+	z_img[0,:, 1] += centroid_y
+
+
+	return z_img
 
 
 

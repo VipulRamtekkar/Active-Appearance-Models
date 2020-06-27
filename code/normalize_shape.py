@@ -8,6 +8,8 @@ import math
 import scipy.spatial as spatial
 import matplotlib.pyplot as plt 
 
+from visualize_pointset import get_coordinates
+
 def GetBilinearPixel(imArr, posX, posY, out):
 
 	#Get integer and fractional parts of numbers
@@ -147,12 +149,59 @@ def PiecewiseAffineTransform(srcIm, srcPoints, dstIm, dstPoints):
 
 	return warp_out
 
+def apply_shape(shape, texture, shape_mean_x_coord, shape_mean_y_coord):
+
+	xmax = shape_mean_x_coord.max(); xmin = shape_mean_x_coord.min()
+	ymax = shape_mean_y_coord.max(); ymin = shape_mean_y_coord.min()
+	xmini = int(xmin); xmaxi = int(xmax+1.0)
+	ymini = int(ymin); ymaxi = int(ymax+1.0)
+
+	shape_mean_x_coord = (shape_mean_x_coord - xmini)/ (xmaxi-xmini)
+	shape_mean_y_coord = (shape_mean_y_coord - ymini)/ (ymaxi-ymini)
+
+	shape[0,:,0] = (shape[0,:,0] - xmini)/ (xmaxi-xmini)
+	shape[0,:,1] = (shape[0,:,1] - ymini)/ (ymaxi-ymini)
+
+
+	H,W = texture.shape
+	src_pts = []
+	for x,y in zip(shape_mean_x_coord, shape_mean_y_coord):
+		x_c = x*W; y_c = y*H
+		# import pdb; pdb.set_trace()
+		x_c = min(max(0, x_c), W-2)
+		y_c = min(max(0, y_c), H-2)
+		src_pts.append((x_c,y_c))
+
+	dst_pts = []
+	for x,y in zip(shape[0,:,0], shape[0,:,1]):
+		x_c = x*W; y_c = y*H
+		# import pdb; pdb.set_trace()
+		x_c = min(max(0, x_c), W-2)
+		y_c = min(max(0, y_c), H-2)
+		dst_pts.append((x_c,y_c))
+
+	# import pdb; pdb.set_trace()
+
+
+	texture_repeated = np.repeat(np.expand_dims(texture,2), 3, axis=2)
+	texture = np.expand_dims(texture, 2)
+	texture_repeated = np.concatenate((texture, np.zeros_like(texture), np.zeros_like(texture)), axis=2)
+	texture_repeated = (texture_repeated - texture_repeated.min()) / (texture_repeated.max() - texture_repeated.min())
+	texture_repeated = Image.fromarray((texture_repeated * 255).astype(np.uint8))
+	# texture_repeated = Image.open('../data/shape_normalized_images/08_01.jpg')
+
+	srcIm = texture_repeated
+	dstIm = texture_repeated
+
+	ymin, ymax, xmin, xmax, img_mask = PiecewiseAffineTransform(srcIm, src_pts, dstIm, dst_pts)
+
+	return (np.array(dstIm)*(img_mask!=0))[:,:,0]
+
+
 def normalize_shape(individual_img_path, target_img_path, show=False):
 	#Load source image
 	srcIm = Image.open(individual_img_path)	
 	dstIm = Image.open(target_img_path)
-
-	from visualize_pointset import get_coordinates
 
 	src_pts = []
 	x_values, y_values, connect_from, connect_to = get_coordinates(individual_img_path)
@@ -164,20 +213,12 @@ def normalize_shape(individual_img_path, target_img_path, show=False):
 	for x,y in zip(x_values, y_values):
 		dst_pts.append((800*x,600*y ))
 
-	x_max = x_values.max(); x_min = x_values.min()
-	y_max = y_values.max(); y_min = y_values.min()
-
-	#Define control points for warp
-	srcCloud = [(100,100),(400,100),(400,400),(100,400)]
-	dstCloud = [(150,120),(374,105),(410,267),(105,390)]
-
 	#Perform transform
 	mean_array = np.array(dstIm.convert('L'))
 	ymin, ymax, xmin, xmax, img_mask = PiecewiseAffineTransform(srcIm, src_pts, dstIm, dst_pts)
 	shape_normalized_img = np.array(dstIm)
 	mean_array = mean_array
 
-	# import pdb; pdb.set_trace()
 	try:
 		shape_normalized_img = (shape_normalized_img*(img_mask!=0))[xmin:xmax, ymin:ymax]
 	except:
@@ -188,10 +229,6 @@ def normalize_shape(individual_img_path, target_img_path, show=False):
 		plt.show()
 	else:
 		return shape_normalized_img
-
-	#Visualise result
-	# srcIm.show()
-	# dstIm.show()
 
 if __name__ == "__main__":
 	normalize_shape(individual_img_path="../imm3943/IMM-Frontal Face DB SMALL/11_07.jpg", 
