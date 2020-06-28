@@ -38,7 +38,11 @@ This will generate the following results:
   - Reconstructions for test image textures and RRMSE of the reconstructions
 - Combine modes of variations
   
-The images in shape-normalized form (in the space of mean mesh) is already generated and provided with the repository. The code can be very easily modified to regenerate them as well.
+The images in shape-normalized form (in the space of mean mesh) is already generated and provided with the repository. The code can be very easily modified to regenerate them as well. 
+
+# To Do (left for later work): 
+
+Image alignment of the reconstructed texture patch back to the originak image (need to implement somethink like Lucas Kanade Image alignment algorithm).
 
 # References:
 
