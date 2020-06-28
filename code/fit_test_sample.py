@@ -1,17 +1,16 @@
-from visualize_pointset import plot_pointset_with_connections
+from visualize_pointset import plot_pointset_with_connections, get_coordinates
 from shape_utils import compute_preshape_space, compute_optimal_rotation
-
-from scipy.optimize import leastsq, fsolve
-
 from texture_utils import *
+from combine_variation_modes import combine_shape_with_normalized_texture
+from image_warp import apply_shape
 
 import os
 import numpy as np 
 import matplotlib.pyplot as plt
 import cv2
+from skimage.color import rgb2gray
 
-# t refers to the number of eigenvalues that are preserved. We preserve the top t out of n eigenvalues
-# that roughly sum up to a certain percent of sum of all n eigenvalues.
+# To get largest t eigenvalues
 def findt(eig_values, percent):
 
 	total = sum(eig_values)
@@ -30,7 +29,6 @@ def get_rrmse(A,B):
 	return rrmse
 
 def fit_shape(test_pointset_data, mean, cov_matrix, eig_values, eig_vecs, connect_from, connect_to, save_dir):
-	# Largest t eigenvalues
 
 	eig_values = np.real(eig_values)
 	eig_vecs = np.real(eig_vecs)
@@ -117,7 +115,55 @@ def fit_texture(test_texture_data, mean, cov_matrix, eig_values, eig_vecs, conne
 
 	print('Average Reconstruction Error on Test Set: Mean: {} Std-Dev: {}'.format(np.mean(rrmse_values), np.std(rrmse_values)))
 	np.save(os.path.join(save_dir, 'texture_model_fit_param.npy'), test_set_params)
+
+
+# This method does not work at present. 
+def fit_total_image(shape_mean, shape_eig_vecs, shape_test_set_params, texture_mean, texture_eig_vecs, texture_test_set_params, 
+	connect_from, connect_to, test_pointset_data, test_texture_data, test_data_list, shape_mean_img_path, save_dir):
+
+	texture_eig_vecs = np.real(texture_eig_vecs)[:, :texture_test_set_params.shape[1]]
+	shape_eig_vecs = np.real(shape_eig_vecs)[:, :shape_test_set_params.shape[1]]
+
+	texture_recon = (texture_mean.reshape(texture_mean.size,1).squeeze() + np.dot(texture_eig_vecs, texture_test_set_params[5])).reshape(texture_mean.shape).squeeze(0)
+	shape_recon = (shape_mean.reshape(shape_mean.size,1).squeeze() + np.dot(shape_eig_vecs, shape_test_set_params[5])).reshape(shape_mean.shape).squeeze(0)
+	texture_recon = cv2.resize(texture_recon, (texture_recon.shape[0]*4,texture_recon.shape[1]*4))
+
+	shape_mean_x_coord, shape_mean_y_coord, connect_from, connect_to = get_coordinates(shape_mean_img_path)
+
+	warped_texture, shape_recon_in_img_space = combine_shape_with_normalized_texture(np.expand_dims(shape_recon,0), cv2.resize(texture_recon, 
+		(texture_recon.shape[0], texture_recon.shape[1])), shape_mean_x_coord, shape_mean_y_coord, return_shape=True)
+
+	original_image = rgb2gray(plt.imread(test_data_list[5]))
+	x_coord, y_coord, connect_from, connect_to = get_coordinates(test_data_list[5])
+	original_pointset = np.concatenate((np.expand_dims(x_coord,1), np.expand_dims(y_coord,1)), axis=1)
+
+	xmin = original_pointset[:,0].min()*800; xmax = original_pointset[:,0].max()*800
+	ymin = original_pointset[:,1].min()*600; ymax = original_pointset[:,1].max()*600
+	xmini = int(xmin); xmaxi = int(xmax+1.)
+	ymini = int(ymin); ymaxi = int(ymax+1.)
+
+	warped_texture = (warped_texture - warped_texture.min() )/(warped_texture.max()- warped_texture.min())
+	original_image = (original_image - original_image.min() )/(original_image.max()- original_image.min())
+	# flag = original_image[ymini+5:ymaxi-5, xmini-2:xmaxi+1].copy()
+	flag = original_image[ymini+5:ymaxi-5, xmini-2:xmaxi+1]*(warped_texture <= 0.2) + 0.8*warped_texture*(warped_texture > 0.2)
+
+
+	f, axarr = plt.subplots(1,2) 
+	axarr[0].imshow(flag, cmap='gray')
+	axarr[0].title.set_text('Model Fit')
+	axarr[0].axis('off')
+
+	axarr[1].imshow(original_image[ymini+5:ymaxi-5, xmini-2:xmaxi+1], cmap='gray')
+	axarr[1].title.set_text('Original Image')
+	axarr[1].axis('off')
+
+	plt.show()
+	import pdb; pdb.set_trace()
+
+	reconstruct_image(shape_recon, texture_recon, original_pointset, original_image, shape_mean_x_coord, shape_mean_y_coord)
+
 	
+
 
 
 

@@ -1,5 +1,5 @@
 from visualize_pointset import get_coordinates
-from normalize_shape import apply_shape
+from image_warp import apply_shape
 from shape_utils import preshape_to_image_space
 
 import os
@@ -13,7 +13,7 @@ def get_individual_variation_mode(eig_values, eig_vecs, mean, i, scale=3):
 	var_minus = mean - scale*np.sqrt(np.real(eig_values[i]))*np.real(eig_vecs[:,i]).reshape(mean.shape)
 	return var_plus, var_minus
 
-def combine_shape_with_normalized_texture(shape_pointset, normalized_texture, shape_mean_x_coord, shape_mean_y_coord):
+def combine_shape_with_normalized_texture(shape_pointset, normalized_texture, shape_mean_x_coord, shape_mean_y_coord, return_shape=False):
 
 	'''
 	shape_pointset: 1xnxd array in preshape space 
@@ -29,7 +29,10 @@ def combine_shape_with_normalized_texture(shape_pointset, normalized_texture, sh
 
 	warped_texture = apply_shape(shape_pointset_in_img_space, normalized_texture, shape_mean_x_coord, shape_mean_y_coord)
 
-	return warped_texture
+	if return_shape:
+		return warped_texture, shape_pointset_in_img_space
+	else:	
+		return warped_texture
 
 
 def get_combine_variation_modes(shape_mean, shape_eig_values, shape_eig_vecs, texture_mean, texture_eig_values, 
