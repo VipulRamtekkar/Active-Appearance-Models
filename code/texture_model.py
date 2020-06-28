@@ -1,5 +1,5 @@
 from texture_utils import compute_mean_texture
-from normalize_shape import normalize_shape
+from image_warp import normalize_shape
 from visualize_pointset import *
 
 import os

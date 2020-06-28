@@ -1,7 +1,6 @@
 import os
 import numpy as np 
 import matplotlib.pyplot as plt 
-import h5py
 
 from shape_utils import *
 from visualize_pointset import *
